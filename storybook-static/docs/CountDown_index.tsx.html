@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Docs by Xabier Lameiro</title><link rel="icon" href="/favicon.svg" title="The favicon"><meta name="robots" content="noindex">
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: CountDown/index.tsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import styles from './countdown.module.css';
+import Tooltip from '@/components/Tooltip';
+import { useIntl } from 'react-intl';
+
+type Props = {
+    date: string;
+    caption?: string;
+};
+
+/**
+ * @description This function is used to calculate the time left until the date
+ * @param {string} date - The date to calculate the time left
+ * @param {Function} setTime - The function to set the time left
+ * @param {Object} timeLeft - The time left object
+ * @returns {Object} - The time left object
+ * @example calculateTimeLeft('2021-12-31', setTime)
+ */
+const calculateTimeLeft = (date: string, setTime: Function, timeLeft: Object = {}) => {
+    const difference = +new Date(date) - +new Date();
+    const months = Math.floor((difference / (1000 * 60 * 60 * 24 * 30)) % 12);
+    const days = Math.floor((difference / (1000 * 60 * 60 * 24)) % 30);
+    const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((difference / (1000 * 60)) % 60);
+    const seconds = Math.floor((difference / 1000) % 60);
+
+    if (difference > 0) {
+        setTime({
+            months: months &lt; 10 ? `0${months}` : months,
+            days: days &lt; 10 ? `0${days}` : days,
+            hours: hours &lt; 10 ? `0${hours}` : hours,
+            minutes: minutes &lt; 10 ? `0${minutes}` : minutes,
+            seconds: seconds &lt; 10 ? `0${seconds}` : seconds,
+        });
+    }
+
+    return timeLeft;
+};
+
+/**
+ * @description Countdown to date provided in months, days, hours, minutes and seconds
+ * @param {string} date - date to countdown to
+ * @param {string} caption - caption to display
+ * @returns {JSX.Element}
+ */
+const CountDown = ({ date: dateProvided, caption }: Props) => {
+    const { formatMessage: f } = useIntl();
+    const [time, setTime] = React.useState({
+        months: 0,
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+    });
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            calculateTimeLeft(dateProvided, setTime);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [dateProvided, time]);
+
+    return (
+        &lt;Tooltip>
+            &lt;Tooltip.Trigger>
+                &lt;div className={styles.countdown} data-testid="countdown">
+                    &lt;div className={styles.countdown__item}>
+                        &lt;div suppressHydrationWarning>{time.months}&lt;/div>
+                        &lt;div className={styles.countdown__item__text}>{f({ id: 'countdown.months' })}&lt;/div>
+                    &lt;/div>
+                    &lt;div className={styles.countdown__item}>
+                        &lt;div suppressHydrationWarning>{time.days}&lt;/div>
+                        &lt;div className={styles.countdown__item__text}>{f({ id: 'countdown.days' })}&lt;/div>
+                    &lt;/div>
+                    &lt;div className={styles.countdown__item}>
+                        &lt;div suppressHydrationWarning>{time.hours}&lt;/div>
+                        &lt;div className={styles.countdown__item__text}>{f({ id: 'countdown.hours' })}&lt;/div>
+                    &lt;/div>
+                    &lt;div className={styles.countdown__item}>
+                        &lt;div suppressHydrationWarning>{time.minutes}&lt;/div>
+                        &lt;div className={styles.countdown__item__text}>{f({ id: 'countdown.minutes' })}&lt;/div>
+                    &lt;/div>
+                    &lt;div className={styles.countdown__item}>
+                        &lt;div suppressHydrationWarning>{time.seconds}&lt;/div>
+                        &lt;div className={styles.countdown__item__text}>{f({ id: 'countdown.seconds' })}&lt;/div>
+                    &lt;/div>
+                &lt;/div>
+            &lt;/Tooltip.Trigger>
+            {caption &amp;&amp; &lt;Tooltip.Content>{caption}&lt;/Tooltip.Content>}
+        &lt;/Tooltip>
+    );
+};
+
+export default CountDown;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="/docs">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#Date">Date</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangeSelect">LangeSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#ShidesShift">ShidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sat Apr 15 2023 17:18:38 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

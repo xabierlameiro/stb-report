@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Docs by Xabier Lameiro</title><link rel="icon" href="/favicon.svg" title="The favicon"><meta name="robots" content="noindex">
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: SEO/index.tsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { useRouter } from 'next/router';
+import React from 'react';
+import { author as auth } from '@/constants/site';
+import { getLang, cleanTrailingSlash } from '@/helpers';
+import Head from 'next/head';
+
+type Props = {
+    isBlog?: boolean;
+    noimage?: boolean;
+    meta?: {
+        noindex?: boolean;
+        title: string;
+        author?: string;
+        description?: string;
+        image?: string;
+        category?: string;
+        alternate?: Array&lt;{ lang: string; url: string }>;
+        slug?: string;
+        url?: string;
+    };
+};
+
+/**
+ * @example
+ *     &lt;SEO meta={meta} isBlog={true} />;
+ *
+ * @param {object} meta - The object containing the meta data for SEO
+ * @param {boolean} isBlog - Whether the page is a blog post the SEO changes
+ * @param {boolean} noimage - Whether to show the image in the SEO
+ * @returns {JSX.Element}
+ */
+const SEO = ({ meta, isBlog, noimage = true }: Props) => {
+    const { locale: l, pathname: path } = useRouter();
+    const category = meta?.category?.toLowerCase();
+    const url = isBlog
+        ? `${process.env.NEXT_PUBLIC_DOMAIN}${getLang(l)}/blog/${category}/${meta?.slug}`
+        : `${process.env.NEXT_PUBLIC_DOMAIN}${getLang(l)}${cleanTrailingSlash(path)}`;
+    const title = meta?.title;
+    const author = meta?.author || auth;
+    const description = meta?.description;
+    const image = meta?.image ?? '/profile.png';
+
+    return (
+        &lt;>
+            &lt;Head>
+                {isBlog ? (
+                    &lt;script
+                        data-testid="json-ld"
+                        type="application/ld+json"
+                        key="item-jsonld"
+                        dangerouslySetInnerHTML={{
+                            __html: JSON.stringify({
+                                '@context': 'https://schema.org',
+                                '@type': 'Article',
+                                headline: title,
+                                description: description,
+                                url: url,
+                                ...(image &amp;&amp; { image: [`${process.env.NEXT_PUBLIC_DOMAIN}/${image}`] }),
+                                datePublished: new Date().toISOString(),
+                                dateModified: new Date().toISOString(),
+                                author: [
+                                    {
+                                        '@type': 'Person',
+                                        name: author,
+                                        url: process.env.NEXT_PUBLIC_DOMAIN,
+                                    },
+                                ],
+                            }),
+                        }}
+                    />
+                ) : (
+                    &lt;>
+                        &lt;link
+                            hrefLang="es"
+                            rel="alternate"
+                            href={`${process.env.NEXT_PUBLIC_DOMAIN}/es${cleanTrailingSlash(path)}`}
+                        />
+                        &lt;link
+                            hrefLang="gl"
+                            rel="alternate"
+                            href={`${process.env.NEXT_PUBLIC_DOMAIN}/gl${cleanTrailingSlash(path)}`}
+                        />
+                    &lt;/>
+                )}
+
+                &lt;title>{title}&lt;/title>
+                {meta?.noindex ? (
+                    &lt;>
+                        &lt;meta name="robots" content="noindex" />
+                        &lt;meta name="googlebot" content="noindex" />
+                    &lt;/>
+                ) : (
+                    &lt;>
+                        &lt;meta name="robots" content="index,follow" />
+                        &lt;meta name="googlebot" content="index,follow" />
+                    &lt;/>
+                )}
+                &lt;meta name="author" content={author} />
+                &lt;meta name="description" content={description} />
+                &lt;meta property="og:description" content={description} />
+                &lt;meta name="twitter:description" content={description} />
+                &lt;meta property="og:title" content={title} />
+                &lt;meta name="twitter:title" content={title} />
+                {noimage &amp;&amp; (
+                    &lt;>
+                        &lt;meta name="image" content={image} />
+                        &lt;meta property="og:image" content={`${process.env.NEXT_PUBLIC_DOMAIN}${image}`} />
+                    &lt;/>
+                )}
+                &lt;meta property="og:url" content={url} />
+                &lt;link rel="canonical" href={url} title="Canonical url" />
+                {meta?.alternate?.map(({ lang, url }, index) => (
+                    &lt;link
+                        data-testid="blog-alternate"
+                        key={index}
+                        rel="alternate"
+                        href={`${process.env.NEXT_PUBLIC_DOMAIN}${getLang(lang)}/blog/${category}/${url}`}
+                        hrefLang={lang}
+                        title={`Alternate url for langueage ${lang}`}
+                    />
+                ))}
+            &lt;/Head>
+        &lt;/>
+    );
+};
+
+export default SEO;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="/docs">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#Date">Date</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangeSelect">LangeSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#ShidesShift">ShidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sat Apr 15 2023 17:18:38 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

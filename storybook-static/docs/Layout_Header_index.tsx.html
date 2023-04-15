@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Docs by Xabier Lameiro</title><link rel="icon" href="/favicon.svg" title="The favicon"><meta name="robots" content="noindex">
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Layout/Header/index.tsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { ReactNode } from 'react';
+import styles from './header.module.css';
+import { SiBitcoincash } from 'react-icons/si';
+import { useRouter } from 'next/router';
+import { useIntl } from 'react-intl';
+import { socialLinks, translateRoute } from '@/constants/site';
+import CryptoPrice from '@/components/CryptoPrice';
+import ViewCounter from '@/components/Blog/ViewCounter';
+import IndexedCounter from '@/components/IndexedCounter';
+import CountDown from '@/components/CountDown';
+import Heating from '@/components/Heating';
+import Tooltip from '@/components/Tooltip';
+import dynamic from 'next/dynamic';
+
+const Weather = dynamic(() => import('@/components/Weather'), {
+    ssr: false,
+});
+
+/**
+ * @description This component is a Clock and a Weather Widget
+ * @param {ReactNode} children - The children
+ * @param {number} minutes - The number of minutes to update the clock
+ * @returns {JSX.Element}
+ */
+const DateAndHour = ({ children, minutes = 1 }: { children?: ReactNode; minutes?: number }) => {
+    const { locale } = useRouter();
+    const { formatMessage: f } = useIntl();
+    const [date, setDate] = React.useState(new Date());
+    const [openWeatherWidget, setOpenWeatherWidget] = React.useState&lt;boolean>(false);
+    const day = date.toLocaleDateString(locale, { weekday: 'short' });
+    const dayNumber = date.toLocaleDateString(locale, { day: 'numeric' });
+    const month = date.toLocaleDateString(locale, { month: 'short' });
+    const hour = date.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric' });
+
+    React.useEffect(() => {
+        const interval = setInterval(() => {
+            setDate(new Date());
+        }, 60000 * minutes);
+        return () => clearInterval(interval);
+    }, [minutes]);
+
+    return (
+        &lt;div>
+            &lt;Tooltip>
+                &lt;Tooltip.Trigger>
+                    &lt;div className={styles.dateAndHour} onClick={() => setOpenWeatherWidget(true)}>
+                        &lt;span suppressHydrationWarning>{day}&lt;/span>
+                        &lt;span suppressHydrationWarning>{dayNumber}&lt;/span>
+                        &lt;span suppressHydrationWarning>{month}&lt;/span>
+                        &lt;span suppressHydrationWarning>{hour}&lt;/span>
+                    &lt;/div>
+                &lt;/Tooltip.Trigger>
+                &lt;Tooltip.Content>{f({ id: 'weather.tooltip' })}&lt;/Tooltip.Content>
+            &lt;/Tooltip>
+            {children &amp;&amp;
+                React.cloneElement(children as React.ReactElement, {
+                    open: openWeatherWidget,
+                    handleClose: () => setOpenWeatherWidget(false),
+                })}
+        &lt;/div>
+    );
+};
+
+/**
+ * @description Translate the route to the current language
+ * @returns {JSX.Element}
+ */
+const Route = () => {
+    const { pathname } = useRouter();
+    const { formatMessage } = useIntl();
+    let route = translateRoute(pathname, formatMessage);
+
+    return &lt;span className={styles.route}>{route}&lt;/span>;
+};
+
+/**
+ * @description Social links component
+ * @returns {JSX.Element}
+ */
+const NavLinks = () => {
+    return (
+        &lt;nav className={styles.navLinks}>
+            {socialLinks.map((item) => (
+                &lt;a
+                    key={item.href}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={item.title}
+                    data-testid={item.testId}
+                >
+                    {item.name}
+                &lt;/a>
+            ))}
+        &lt;/nav>
+    );
+};
+
+/**
+ * @description Header navigation bar component with the following features:
+ * - Bitcoin logo
+ * - Current route
+ * - Social links
+ * - XRP price
+ * - Indexed pages counter
+ * - Total views counter
+ * - Heating temperature
+ * - Date and hour
+ * - Weather Widget
+ * @param {ReactNode} children - The children to display: ;
+ * @returns {JSX.Element}
+ */
+const Header = ({ children }: { children?: ReactNode }) => {
+    const { formatMessage: f } = useIntl();
+
+    return (
+        &lt;header data-testid="header" className={styles.header}>
+            &lt;SiBitcoincash />
+            &lt;Route />
+            &lt;NavLinks />
+            &lt;CountDown date="2023-05-26T00:00:00+00:00" caption={f({ id: 'countdown.caption' })} />
+            &lt;CryptoPrice />
+            &lt;IndexedCounter />
+            &lt;ViewCounter all />
+            &lt;Heating />
+            &lt;DateAndHour>
+                &lt;Weather cities={['limerick+ireland', 'moraña+galicia', 'vilagarcía+galicia']} />
+            &lt;/DateAndHour>
+            {children}
+        &lt;/header>
+    );
+};
+
+export default Header;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="/docs">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#Date">Date</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangeSelect">LangeSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#ShidesShift">ShidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sat Apr 15 2023 17:18:38 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
