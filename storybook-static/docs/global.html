@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Global</title>
+    <title>Docs by Xabier Lameiro</title><link rel="icon" href="https://pre.xabierlameiro.com/favicon.png" title="The favicon"><meta name="robots" content="noindex">
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Global</h1>
+    <h1 class="page-title">Components</h1>
 
     
 
@@ -98,15 +98,15 @@
 
         
             
-<h4 class="name" id="GoogleAdsense"><span class="type-signature">(constant) </span>GoogleAdsense<span class="type-signature"></span></h4>
+<h4 class="name" id="CONSENT_STORAGE_KEY"><span class="type-signature">(constant) </span>CONSENT_STORAGE_KEY<span class="type-signature"></span></h4>
 
 
 
 
 <div class="description">
-    <ul>
-<li>The adsense will be rendered only in production mode and horizontal only on mobile</li>
-</ul>
+    <p>Where the visitor's answer is kept. <code>_app</code> reads the same key from its inline
+bootstrap so a returning visitor's grant is replayed into Consent Mode before
+gtag.js ever runs — otherwise every visit would start denied.</p>
 </div>
 
 
@@ -144,7 +144,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="GoogleAdsense_index.tsx.html">GoogleAdsense/index.tsx</a>, <a href="GoogleAdsense_index.tsx.html#line10">line 10</a>
+        <a href="CookieConsent_index.tsx.html">CookieConsent/index.tsx</a>, <a href="CookieConsent_index.tsx.html#line8">line 8</a>
     </li></ul></dd>
     
 
@@ -157,25 +157,22 @@
 
 
 
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>&lt;GoogleAdsense slot="1234567890" />;</code></pre>
 
 
 
         
             
-<h4 class="name" id="useDeploymentStatus"><span class="type-signature">(constant) </span>useDeploymentStatus<span class="type-signature"></span></h4>
+<h4 class="name" id="OG_IMAGE_WIDTH"><span class="type-signature">(constant) </span>OG_IMAGE_WIDTH<span class="type-signature"></span></h4>
 
 
 
 
 <div class="description">
-    <ul>
-<li>Fetches the deployment status</li>
-</ul>
+    <p>SDD-L04: dimensions and alt added alongside the URL. Without <code>og:image:width</code>/<code>height</code> a scraper
+has to fetch the image before it can lay out a card, and some (LinkedIn in particular) fall back to
+a small preview or no image rather than wait. Every OG image this site references is 1200x630 —
+<code>og-home.jpg</code> and all 15 post images in <code>public/posts/</code> — so the values are accurate rather than
+guessed. <code>og:image:alt</code> is the accessible description consumers read out.</p>
 </div>
 
 
@@ -213,7 +210,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DeploymentStatus_index.tsx.html">DeploymentStatus/index.tsx</a>, <a href="DeploymentStatus_index.tsx.html#line20">line 20</a>
+        <a href="SEO_tags.tsx.html">SEO/tags.tsx</a>, <a href="SEO_tags.tsx.html#line217">line 217</a>
     </li></ul></dd>
     
 
@@ -228,9 +225,582 @@
 
 
 
-    <h5>Example</h5>
+
+        
+            
+<h4 class="name" id="OG_LOCALES"><span class="type-signature">(constant) </span>OG_LOCALES<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Tag builders for <SEO />.</p>
+<p>These are plain functions returning arrays of elements, deliberately NOT React
+components. <code>next/head</code> only picks up tags that are direct children, inside a
+single React.Fragment, or in an array — a custom component renders server-side
+and then vanishes on client-side navigation (vercel/next.js#8384). Arrays are
+documented as supported, so this split is safe where a <MetaTags /> would not be.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
     
-    <pre class="prettyprint"><code>- const { data, isLoading, isError } = useDeploymentStatus();</code></pre>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="SEO_tags.tsx.html">SEO/tags.tsx</a>, <a href="SEO_tags.tsx.html#line5">line 5</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="UNTRANSLATED_PATH_PREFIXES"><span class="type-signature">(constant) </span>UNTRANSLATED_PATH_PREFIXES<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Paths whose content is identical in every locale, so no <code>es</code>/<code>gl</code> alternate may be claimed.</p>
+<p>SDD-L08. <code>data/legal/</code> holds three files with no locale suffix and <code>legal/[slug].tsx</code> never
+receives the locale, so the same English document is served at <code>/legal/*</code>, <code>/es/legal/*</code> and
+<code>/gl/legal/*</code> — while these tags told Google three translations existed. hreflang is a
+reciprocal claim about <em>translated</em> content; pointing it at the same English text is telling
+search engines something untrue, and it invites them to serve a Spanish-speaking reader an
+English page they cannot use.</p>
+<p>This is a stopgap, not the fix. The fix is L08-T2 — actual <code>es</code>/<code>gl</code> legal documents — which is
+owner work: these texts invoke Spanish law (Ley 34/2002, LOPD-GDD, RD 1720/2007) and make
+representations to users about data handling. A machine translation is not adequate. Until then,
+claiming nothing beats claiming falsely.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="SEO_tags.tsx.html">SEO/tags.tsx</a>, <a href="SEO_tags.tsx.html#line153">line 153</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="alternateLinks"><span class="type-signature">(constant) </span>alternateLinks<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Translated URLs for the current blog post.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="SEO_tags.tsx.html">SEO/tags.tsx</a>, <a href="SEO_tags.tsx.html#line188">line 188</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="articleTags"><span class="type-signature">(constant) </span>articleTags<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>article:* metadata, emitted for blog posts only.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="SEO_tags.tsx.html">SEO/tags.tsx</a>, <a href="SEO_tags.tsx.html#line151">line 151</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="blogTags"><span class="type-signature">(constant) </span>blogTags<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Structured data and hreflang links for a blog post.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="SEO_tags.tsx.html">SEO/tags.tsx</a>, <a href="SEO_tags.tsx.html#line73">line 73</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="consentSignals"><span class="type-signature">(constant) </span>consentSignals<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>The four Consent Mode v2 signals this site can move. Storage that
+is not tied to identifying the visitor (<code>functionality_storage</code>,
+<code>security_storage</code>) is granted by default in <code>_app</code> and never asked about,
+because it is exempt from prior consent.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CookieConsent_index.tsx.html">CookieConsent/index.tsx</a>, <a href="CookieConsent_index.tsx.html#line17">line 17</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="ogLocaleTags"><span class="type-signature">(constant) </span>ogLocaleTags<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>og:locale alone tells a scraper which language THIS page is; the alternates
+declare that the other translations exist. hreflang covers this for search engines, but
+Open Graph consumers (LinkedIn, Facebook, Slack) do not read it.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="SEO_tags.tsx.html">SEO/tags.tsx</a>, <a href="SEO_tags.tsx.html#line238">line 238</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="resolveSeoUrls"><span class="type-signature">(constant) </span>resolveSeoUrls<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Resolve the canonical URL and the derived values every tag group needs.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="SEO_tags.tsx.html">SEO/tags.tsx</a>, <a href="SEO_tags.tsx.html#line54">line 54</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="staticHreflangTags"><span class="type-signature">(constant) </span>staticHreflangTags<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>hreflang links for the static, non-blog pages.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="SEO_tags.tsx.html">SEO/tags.tsx</a>, <a href="SEO_tags.tsx.html#line135">line 135</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
 
 
 
@@ -238,7 +808,7 @@
     
 
     
-        <h3 class="subsection-title">Methods</h3>
+        
 
         
             
@@ -788,7 +1358,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="BackgroundImage_index.tsx.html">BackgroundImage/index.tsx</a>, <a href="BackgroundImage_index.tsx.html#line6">line 6</a>
+        <a href="BackgroundImage_index.tsx.html">BackgroundImage/index.tsx</a>, <a href="BackgroundImage_index.tsx.html#line5">line 5</a>
     </li></ul></dd>
     
 
@@ -1036,7 +1606,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ControlButtons_index.tsx.html">ControlButtons/index.tsx</a>, <a href="ControlButtons_index.tsx.html#line13">line 13</a>
+        <a href="ControlButtons_index.tsx.html">ControlButtons/index.tsx</a>, <a href="ControlButtons_index.tsx.html#line14">line 14</a>
     </li></ul></dd>
     
 
@@ -1086,6 +1656,122 @@
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>&lt;ControlButtons />;</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="CookieConsent"><span class="type-signature"></span>CookieConsent<span class="signature">()</span><span class="type-signature"> &rarr; {JSX.Element|null}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Prior-consent gate for analytics storage. Until the visitor
+answers, <code>_app</code> has already told gtag every identifying signal is denied, so
+nothing is written; this component only ever moves that state.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CookieConsent_index.tsx.html">CookieConsent/index.tsx</a>, <a href="CookieConsent_index.tsx.html#line30">line 30</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">JSX.Element</span>
+|
+
+<span class="param-type">null</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>&lt;CookieConsent />;</code></pre>
 
 
 
@@ -1384,162 +2070,6 @@
     
 
     
-    <h4 class="name" id="Date"><span class="type-signature"></span>Date<span class="signature">(string)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>string</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="global.html#Date">Date</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Date_index.tsx.html">Date/index.tsx</a>, <a href="Date_index.tsx.html#line9">line 9</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">JSX.Element</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>&lt;Date date="01-02-2023" /></code></pre>
-
-
-
-        
-            
-
-    
-
-    
     <h4 class="name" id="DateAndHour"><span class="type-signature"></span>DateAndHour<span class="signature">(children, minutes)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
     
 
@@ -1772,7 +2302,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DeploymentStatus_index.tsx.html">DeploymentStatus/index.tsx</a>, <a href="DeploymentStatus_index.tsx.html#line35">line 35</a>
+        <a href="DeploymentStatus_index.tsx.html">DeploymentStatus/index.tsx</a>, <a href="DeploymentStatus_index.tsx.html#line34">line 34</a>
     </li></ul></dd>
     
 
@@ -1837,7 +2367,7 @@
     
 
     
-    <h4 class="name" id="Dialog"><span class="type-signature"></span>Dialog<span class="signature">(dialogRef, open, withPadding, modalMode, header, body, footer, large)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
+    <h4 class="name" id="Dialog"><span class="type-signature"></span>Dialog<span class="signature">(dialogRef, open, withPadding, modalMode, header, body, footer, large, label, onClose)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
     
 
     
@@ -2058,6 +2588,52 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>label</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Accessible name for the window</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>onClose</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Invoked when Escape is pressed</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -2095,7 +2671,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Dialog_index.tsx.html">Dialog/index.tsx</a>, <a href="Dialog_index.tsx.html#line17">line 17</a>
+        <a href="Dialog_index.tsx.html">Dialog/index.tsx</a>, <a href="Dialog_index.tsx.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -2215,7 +2791,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Dock_index.tsx.html">Dock/index.tsx</a>, <a href="Dock_index.tsx.html#line10">line 10</a>
+        <a href="Dock_index.tsx.html">Dock/index.tsx</a>, <a href="Dock_index.tsx.html#line11">line 11</a>
     </li></ul></dd>
     
 
@@ -2252,6 +2828,347 @@
     
 
 
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="FormattedDate"><span class="type-signature"></span>FormattedDate<span class="signature">(string)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>string</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Date</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Date_index.tsx.html">Date/index.tsx</a>, <a href="Date_index.tsx.html#line9">line 9</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">JSX.Element</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>&lt;Date date="01-02-2023" /></code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="GoogleAdsense"><span class="type-signature"></span>GoogleAdsense<span class="signature">(client, slot)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <ul>
+<li>The adsense will be rendered only in production mode and horizontal only on mobile</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>client</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The client id</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>slot</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The slot id</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="GoogleAdsense_index.tsx.html">GoogleAdsense/index.tsx</a>, <a href="GoogleAdsense_index.tsx.html#line15">line 15</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">JSX.Element</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>&lt;GoogleAdsense slot="1234567890" />;</code></pre>
 
 
 
@@ -2529,7 +3446,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line104">line 104</a>
+        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line108">line 108</a>
     </li></ul></dd>
     
 
@@ -2899,7 +3816,7 @@
     
 
     
-    <h4 class="name" id="IconWithName"><span class="type-signature"></span>IconWithName<span class="signature">(icon, alt, name, horizontal)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
+    <h4 class="name" id="IconWithName"><span class="type-signature"></span>IconWithName<span class="signature">(icon, alt, name, horizontal, onClick, pressed)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
     
 
     
@@ -3028,6 +3945,52 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>onClick</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Makes this a button; omit it for a static tile</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pressed</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Toggle state, forwarded as aria-pressed</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -3065,7 +4028,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="IconWithName_index.tsx.html">IconWithName/index.tsx</a>, <a href="IconWithName_index.tsx.html#line13">line 13</a>
+        <a href="IconWithName_index.tsx.html">IconWithName/index.tsx</a>, <a href="IconWithName_index.tsx.html#line15">line 15</a>
     </li></ul></dd>
     
 
@@ -4671,7 +5634,7 @@
     
 
     
-    <h4 class="name" id="RenderManager"><span class="type-signature"></span>RenderManager<span class="signature">(boolean, boolean, string, string)</span><span class="type-signature"> &rarr; {React.ReactNode}</span></h4>
+    <h4 class="name" id="RenderManager"><span class="type-signature"></span>RenderManager<span class="signature">(Error, boolean, string, string)</span><span class="type-signature"> &rarr; {React.ReactNode}</span></h4>
     
 
     
@@ -4682,6 +5645,13 @@
     <ul>
 <li>Renders children or error/loading icon</li>
 </ul>
+<p>SDD-L07: <code>error</code> was typed <code>boolean</code>. It never was one — every caller passes SWR's <code>error</code>, an
+<code>Error</code> object, and it typechecked only because <code>useSWR&lt;Data&gt;</code> leaves the error generic at <code>any</code>.
+The declaration therefore discarded the only information the widget had about <em>what</em> went wrong,
+which is why all ten of them showed the same icon and the same sentence whether the route was
+down, the network was gone, or the response no longer matched its contract.</p>
+<p><code>errorTitle</code> still wins when a caller supplies one, so widget-specific wording (&quot;heating
+unavailable&quot;) is unchanged; the distinction only fills in where there was no wording at all.</p>
 </div>
 
 
@@ -4717,7 +5687,7 @@
 
         <tr>
             
-                <td class="name"><code>boolean</code></td>
+                <td class="name"><code>Error</code></td>
             
 
             <td class="type">
@@ -4733,7 +5703,7 @@
 
             
 
-            <td class="description last"><p>error state</p></td>
+            <td class="description last"><p>| undefined - the failure, if there was one</p></td>
         </tr>
 
     
@@ -4866,7 +5836,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="RenderManager_index.tsx.html">RenderManager/index.tsx</a>, <a href="RenderManager_index.tsx.html#line15">line 15</a>
+        <a href="RenderManager_index.tsx.html">RenderManager/index.tsx</a>, <a href="RenderManager_index.tsx.html#line32">line 32</a>
     </li></ul></dd>
     
 
@@ -5234,7 +6204,7 @@
     
 
     
-    <h4 class="name" id="SearchInput"><span class="type-signature"></span>SearchInput<span class="signature">(value, disabled, onBlur, onChange, placeHolderText)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
+    <h4 class="name" id="SearchInput"><span class="type-signature"></span>SearchInput<span class="signature">(value, disabled, onBlur, onChange, placeHolderText, label)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
     
 
     
@@ -5386,6 +6356,29 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>label</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Accessible name for the field</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -5423,7 +6416,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="SearchInput_index.tsx.html">SearchInput/index.tsx</a>, <a href="SearchInput_index.tsx.html#line11">line 11</a>
+        <a href="SearchInput_index.tsx.html">SearchInput/index.tsx</a>, <a href="SearchInput_index.tsx.html#line15">line 15</a>
     </li></ul></dd>
     
 
@@ -5482,7 +6475,7 @@
     
 
     
-    <h4 class="name" id="ShidesShift"><span class="type-signature"></span>ShidesShift<span class="signature">(handleClick, leftPosition)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
+    <h4 class="name" id="SidesShift"><span class="type-signature"></span>SidesShift<span class="signature">(handleClick, leftPosition, label, expanded)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
     
 
     
@@ -5538,7 +6531,7 @@
 
             
 
-            <td class="description last"><p>The function to be called when the button is clicked</p></td>
+            <td class="description last"><p>Makes this a real button; omit it for a decorative grabber</p></td>
         </tr>
 
     
@@ -5562,6 +6555,52 @@
             
 
             <td class="description last"><p>If true, the button will be positioned on the left</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>label</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Accessible name, required alongside handleClick</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>expanded</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Panel open state, forwarded as aria-expanded</p></td>
         </tr>
 
     
@@ -5602,7 +6641,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="SidesShift_index.tsx.html">SidesShift/index.tsx</a>, <a href="SidesShift_index.tsx.html#line11">line 11</a>
+        <a href="SidesShift_index.tsx.html">SidesShift/index.tsx</a>, <a href="SidesShift_index.tsx.html#line15">line 15</a>
     </li></ul></dd>
     
 
@@ -5651,7 +6690,8 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>&lt;SidesShift />;</code></pre>
+    <pre class="prettyprint"><code>&lt;SidesShift />;
+    &lt;SidesShift handleClick={toggle} label="Show posts" expanded={open} />;</code></pre>
 
 
 
@@ -6698,6 +7738,376 @@
 
 
         
+            
+
+    
+
+    
+    <h4 class="name" id="errorMessageId"><span class="type-signature"></span>errorMessageId<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <ul>
+<li>Decide which of the failure message ids fits this error.</li>
+</ul>
+<p>Kept outside the component so the mapping can be read on its own: a route that answered a status
+we do not accept is a different event from a route that answered a body we do not recognise, and
+a reader can act on the difference.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="RenderManager_index.tsx.html">RenderManager/index.tsx</a>, <a href="RenderManager_index.tsx.html#line19">line 19</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="useDeploymentStatus"><span class="type-signature"></span>useDeploymentStatus<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <ul>
+<li>Fetches the deployment status</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="DeploymentStatus_index.tsx.html">DeploymentStatus/index.tsx</a>, <a href="DeploymentStatus_index.tsx.html#line15">line 15</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>- const { data, isLoading, error } = useDeploymentStatus();</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="usePostComponents"><span class="type-signature"></span>usePostComponents<span class="signature">(meta)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>MDX component overrides that inject the E-E-A-T byline under the post title.</p>
+<p>Every MDX body opens with <code># Title</code> immediately followed by <Date />, so a page-level
+byline rendered above <MDXRemote> produced: author → title → date. Injecting it through
+the h1 override lands it under the heading, where a byline belongs, without editing the
+42 MDX files. It stays server-rendered (the <Date /> component is ssr: false, so its
+output never reaches a crawler) which is the point of the E-E-A-T byline in SDD-003.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>meta</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Post frontmatter carrying the author and publication date.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Blog_PostByline_index.tsx.html">Blog/PostByline/index.tsx</a>, <a href="Blog_PostByline_index.tsx.html#line13">line 13</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The MDX components map to hand to <MDXRemote />.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
     
 
     
@@ -6713,13 +8123,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#Date">Date</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#ShidesShift">ShidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li></ul>
+    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Jul 23 2025 16:50:52 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Jul 27 2026 07:15:26 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: DeploymentStatus/index.tsx</title>
+    <title>Docs by Xabier Lameiro</title><link rel="icon" href="https://pre.xabierlameiro.com/favicon.png" title="The favicon"><meta name="robots" content="noindex">
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -32,31 +32,30 @@ import styles from './deploymentstatus.module.css';
 import Tooltip from '@/components/Tooltip';
 import { useIntl } from 'react-intl';
 import RenderManager from '@/components/RenderManager';
+import createFetcher from '@/helpers/createFetcher';
+import { deploymentSchema } from '../../types/schemas';
 import type { DeploymentData } from '../../types/api';
 
 const url = `${process.env.NEXT_PUBLIC_DOMAIN}/api/deployments`;
 
-const fetchDeployment = async (url: string): Promise&lt;DeploymentData> => {
-    const response = await fetch(url);
-    if (!response.ok) {
-        throw new Error(`Failed to fetch deployment data: ${response.statusText}`);
-    }
-    const data = await response.json();
-    return data as DeploymentData;
-};
+const fetchDeployment = createFetcher(deploymentSchema, '/api/deployments');
 
 /**
  *
- * @returns { {data: DeploymentData | undefined, isLoading: boolean, isError: boolean} } - The deployment status
+ * @returns { {data: DeploymentData | undefined, isLoading: boolean, error: Error | undefined} }
  * @description - Fetches the deployment status
- * @example - const { data, isLoading, isError } = useDeploymentStatus();
+ * @example - const { data, isLoading, error } = useDeploymentStatus();
  */
-export const useDeploymentStatus = () => {
-    const { data, error } = useSWR&lt;DeploymentData>(url, fetchDeployment);
+const useDeploymentStatus = (): {
+    data: DeploymentData | undefined;
+    isLoading: boolean;
+    error: Error | undefined;
+} => {
+    const { data, error } = useSWR&lt;DeploymentData, Error>(url, fetchDeployment);
     return {
         data,
         isLoading: !error &amp;&amp; !data,
-        isError: error,
+        error,
     };
 };
 
@@ -67,8 +66,12 @@ export const useDeploymentStatus = () => {
  * @example - &lt;DeploymentStatus />
  */
 const DeploymentStatus = () => {
-    const { data, isLoading, isError } = useDeploymentStatus();
-    const { formatMessage: f } = useIntl();
+    const { data, isLoading, error } = useDeploymentStatus();
+    // SDD-L08: `formatDate` instead of a bare `toLocaleString()` with no locale argument, which
+    // formatted against the *browser's* locale rather than the site's — so a reader on /es with an
+    // English-configured machine saw an English date inside a Spanish sentence. The other three
+    // components that render dates already did this correctly.
+    const { formatMessage: f, formatDate } = useIntl();
 
     const status = data?.status;
     const username = data?.username;
@@ -76,10 +79,26 @@ const DeploymentStatus = () => {
     const createdAt = data?.createdAt;
 
     return (
-        &lt;RenderManager error={isError} loading={isLoading}>
+        &lt;RenderManager error={error} loading={isLoading}>
             &lt;Tooltip>
                 &lt;Tooltip.Trigger>
-                    &lt;div className={`${styles.status} ${status ? styles[status.toLowerCase()] : ''}`} />
+                    {/*
+                     * SDD-L06: was an empty &lt;div> — no text, no label, no role. A screen reader
+                     * announced nothing, and sighted users had only hue to go on: every one of the six
+                     * states computes between 1.01:1 and 2.93:1 against the LIGHT header gradient, so
+                     * low-vision users could not see it at all and colour-blind users could not tell
+                     * ready from error. `role="img"` plus a name carries the state to assistive tech,
+                     * and the glyph gives it a second, non-colour channel (WCAG 1.4.1).
+                     */}
+                    &lt;span
+                        role="img"
+                        aria-label={f(
+                            { id: 'deploymentstatus.tooltip' },
+                            { status, username, environment, createdAt: '' }
+                        )}
+                        data-status={status ? status.toLowerCase() : 'unknown'}
+                        className={`${styles.status} ${status ? styles[status.toLowerCase()] : ''}`}
+                    />
                 &lt;/Tooltip.Trigger>
                 &lt;Tooltip.Content>
                     {f(
@@ -90,7 +109,9 @@ const DeploymentStatus = () => {
                             status,
                             username,
                             environment,
-                            createdAt: createdAt ? new Date(createdAt).toLocaleString() : '',
+                            createdAt: createdAt
+                                ? formatDate(createdAt, { dateStyle: 'medium', timeStyle: 'short' })
+                                : '',
                         }
                     )}
                 &lt;/Tooltip.Content>
@@ -110,13 +131,13 @@ export default DeploymentStatus;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#Date">Date</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#ShidesShift">ShidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li></ul>
+    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Jul 23 2025 16:50:52 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Jul 27 2026 07:15:26 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

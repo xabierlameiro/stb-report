@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Docs by Xabier Lameiro</title><link rel="icon" href="https://pre.xabierlameiro.com/favicon.png" title="The favicon"><meta name="robots" content="noindex">
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Blog/PostByline/index.tsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import Link from 'next/link';
+import { useIntl } from 'react-intl';
+import { components } from '@/helpers/mdxjs';
+import { author as defaultAuthor } from '@/constants/site';
+import styles from '@/styles/blog.module.css';
+
+type BylineMeta = {
+    author?: string;
+    date?: string | null;
+};
+
+/**
+ * @description MDX component overrides that inject the E-E-A-T byline under the post title.
+ *
+ * Every MDX body opens with `# Title` immediately followed by &lt;Date />, so a page-level
+ * byline rendered above &lt;MDXRemote> produced: author → title → date. Injecting it through
+ * the h1 override lands it under the heading, where a byline belongs, without editing the
+ * 42 MDX files. It stays server-rendered (the &lt;Date /> component is ssr: false, so its
+ * output never reaches a crawler) which is the point of the E-E-A-T byline in SDD-003.
+ *
+ * @param {object} meta - Post frontmatter carrying the author and publication date.
+ * @returns {object} The MDX components map to hand to &lt;MDXRemote />.
+ */
+const usePostComponents = (meta: BylineMeta) => {
+    const { formatDate } = useIntl();
+    const { author, date } = meta;
+
+    return React.useMemo(() => {
+        const byline = (
+            &lt;p className={styles.byline}>
+                {/* The entity page is the home: its editor window holds the bio and contact tabs */}
+                &lt;Link href="/">{author ?? defaultAuthor}&lt;/Link>
+                {date ? (
+                    &lt;>
+                        {' · '}
+                        {/* UTC pins the calendar day: date is a date-only ISO string, which parses
+                            as UTC midnight and would format one day early behind UTC (see #135). */}
+                        &lt;time dateTime={date}>
+                            {formatDate(date, {
+                                timeZone: 'UTC',
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                            })}
+                        &lt;/time>
+                    &lt;/>
+                ) : null}
+            &lt;/p>
+        );
+
+        return {
+            ...components,
+            h1: (props: React.ComponentPropsWithoutRef&lt;'h1'>) => (
+                &lt;>
+                    {/* jsx-a11y/heading-has-content cannot see through the spread and reads this as an
+                        empty heading. The content is real: MDX passes the `# Title` text as children,
+                        which is why every built post page has a populated &lt;h1>. Suppressed rather than
+                        restructured, because the alternative is to stop forwarding props. */}
+                    {/* eslint-disable-next-line jsx-a11y/heading-has-content */}
+                    &lt;h1 {...props} />
+                    {byline}
+                &lt;/>
+            ),
+            // The byline carries the date now. The &lt;Date /> tag stays in the MDX source because
+            // extractPostDate parses it for datePublished and the sitemap lastmod.
+            Date: () => null,
+        };
+    }, [formatDate, author, date]);
+};
+
+export default usePostComponents;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Jul 27 2026 07:15:26 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

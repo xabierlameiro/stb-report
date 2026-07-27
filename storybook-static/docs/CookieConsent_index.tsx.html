@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Docs by Xabier Lameiro</title><link rel="icon" href="https://pre.xabierlameiro.com/favicon.png" title="The favicon"><meta name="robots" content="noindex">
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: CookieConsent/index.tsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import { useIntl } from 'react-intl';
+import Link from 'next/link';
+import { BsCookie } from 'react-icons/bs';
+import { clx } from '@/helpers';
+import styles from './cookieConsent.module.css';
+
+/**
+ * Where the visitor's answer is kept. `_app` reads the same key from its inline
+ * bootstrap so a returning visitor's grant is replayed into Consent Mode before
+ * gtag.js ever runs — otherwise every visit would start denied.
+ */
+export const CONSENT_STORAGE_KEY = 'cookie-consent';
+
+export type ConsentChoice = 'granted' | 'denied';
+
+/**
+ * @description The four Consent Mode v2 signals this site can move. Storage that
+ * is not tied to identifying the visitor (`functionality_storage`,
+ * `security_storage`) is granted by default in `_app` and never asked about,
+ * because it is exempt from prior consent.
+ */
+export const consentSignals = (choice: ConsentChoice) => ({
+    ad_storage: choice,
+    ad_user_data: choice,
+    ad_personalization: choice,
+    analytics_storage: choice,
+});
+
+/**
+ * @description Prior-consent gate for analytics storage. Until the visitor
+ * answers, `_app` has already told gtag every identifying signal is denied, so
+ * nothing is written; this component only ever moves that state.
+ *
+ * @example
+ *     &lt;CookieConsent />;
+ *
+ * @returns {JSX.Element | null}
+ */
+const CookieConsent = () => {
+    const { formatMessage } = useIntl();
+    const [needsAnswer, setNeedsAnswer] = React.useState(false);
+
+    React.useEffect(() => {
+        // Reading storage during render would make the server and client markup
+        // disagree, so the banner is decided after hydration.
+        try {
+            setNeedsAnswer(window.localStorage.getItem(CONSENT_STORAGE_KEY) === null);
+        } catch {
+            // Storage blocked (private mode, cookie-blocking extension). With
+            // nowhere to record an answer, asking on every page load is worse than
+            // staying on the denied defaults.
+        }
+    }, []);
+
+    const answer = React.useCallback((choice: ConsentChoice) => {
+        try {
+            window.localStorage.setItem(CONSENT_STORAGE_KEY, choice);
+        } catch {
+            // Same as above: the choice still applies to this page view.
+        }
+        window.gtag?.('consent', 'update', consentSignals(choice));
+        setNeedsAnswer(false);
+    }, []);
+
+    const handleAccept = React.useCallback(() => answer('granted'), [answer]);
+    const handleReject = React.useCallback(() => answer('denied'), [answer]);
+
+    // Escape answers "no". The default state is already denied, so dismissing without choosing must
+    // not be read as acceptance — and a notification the keyboard cannot dismiss is a trap.
+    React.useEffect(() => {
+        if (!needsAnswer) return undefined;
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') handleReject();
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [needsAnswer, handleReject]);
+
+    if (!needsAnswer) return null;
+
+    return (
+        /**
+         * `role="dialog"` without `aria-modal`, and no focus trap: this is a macOS-style notification
+         * sitting beside the page, not a modal over it, so trapping focus would misdescribe it and
+         * strand a keyboard user. The previous markup paired `role="dialog"` with `aria-live`, which is
+         * invalid — a dialog is a window, not a live region — and made some screen readers announce the
+         * whole subtree as an atomic update while also reporting a dialog.
+         */
+        &lt;section
+            className={styles.notification}
+            role="dialog"
+            aria-labelledby="cookie-consent-title"
+            aria-describedby="cookie-consent-message"
+        >
+            &lt;div className={styles.header}>
+                &lt;BsCookie className={styles.icon} aria-hidden="true" />
+                &lt;div className={styles.title} id="cookie-consent-title">
+                    {formatMessage({ id: 'consent.title' })}
+                &lt;/div>
+            &lt;/div>
+            &lt;div className={styles.message} id="cookie-consent-message">
+                {formatMessage({ id: 'consent.message' })}{' '}
+                &lt;Link href="/legal/cookies-policy">{formatMessage({ id: 'legal.cookies-policy' })}&lt;/Link>
+            &lt;/div>
+            &lt;div className={styles.actions}>
+                &lt;button type="button" className={styles.button} onClick={handleReject} data-testid="consent-reject">
+                    {formatMessage({ id: 'consent.reject' })}
+                &lt;/button>
+                &lt;button
+                    type="button"
+                    className={clx(styles.button, styles.accept)}
+                    onClick={handleAccept}
+                    data-testid="consent-accept"
+                >
+                    {formatMessage({ id: 'consent.accept' })}
+                &lt;/button>
+            &lt;/div>
+        &lt;/section>
+    );
+};
+
+export default CookieConsent;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Jul 27 2026 07:15:26 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
