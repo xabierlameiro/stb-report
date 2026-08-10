@@ -295,6 +295,70 @@ documented as supported, so this split is safe where a <MetaTags /> would not be
 
         
             
+<h4 class="name" id="STATUS_ICONS"><span class="type-signature">(constant) </span>STATUS_ICONS<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>SDD-L12-T8. One icon per status item, keyed by <code>testId</code> so a rename in <code>site.ts</code> fails loudly
+here rather than silently rendering nothing. Kept in the component because <code>site.ts</code> is data —
+importing React components into it would make every consumer of the constants pull in icons.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line92">line 92</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
 <h4 class="name" id="UNTRANSLATED_PATH_PREFIXES"><span class="type-signature">(constant) </span>UNTRANSLATED_PATH_PREFIXES<span class="type-signature"></span></h4>
 
 
@@ -2194,7 +2258,7 @@ nothing is written; this component only ever moves that state.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line20">line 20</a>
+        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line31">line 31</a>
     </li></ul></dd>
     
 
@@ -3446,7 +3510,7 @@ nothing is written; this component only ever moves that state.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line108">line 108</a>
+        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line148">line 148</a>
     </li></ul></dd>
     
 
@@ -4495,7 +4559,10 @@ nothing is written; this component only ever moves that state.</p>
 
 
 <div class="description">
-    <p>Social links component</p>
+    <p>The profile and artifact links, as icons in the left zone beside the identity.</p>
+<p>SDD-L12-T9. T8 put them in the right zone, which read as a second cluster of status items hanging
+off the countdown. They are navigation, not status — on a macOS menu bar that belongs next to the
+app identity — and that is also where they were before T8 moved them.</p>
 </div>
 
 
@@ -4539,7 +4606,7 @@ nothing is written; this component only ever moves that state.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line81">line 81</a>
+        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line108">line 108</a>
     </li></ul></dd>
     
 
@@ -5534,7 +5601,7 @@ nothing is written; this component only ever moves that state.</p>
 
             
 
-            <td class="description last"><p>The category is used to highlight the selected post</p></td>
+            <td class="description last"><p>The taxonomy segment being browsed, preserved in every link</p></td>
         </tr>
 
     
@@ -5575,7 +5642,7 @@ nothing is written; this component only ever moves that state.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Blog_PostList_index.tsx.html">Blog/PostList/index.tsx</a>, <a href="Blog_PostList_index.tsx.html#line15">line 15</a>
+        <a href="Blog_PostList_index.tsx.html">Blog/PostList/index.tsx</a>, <a href="Blog_PostList_index.tsx.html#line29">line 29</a>
     </li></ul></dd>
     
 
@@ -5948,7 +6015,7 @@ unavailable&quot;) is unchanged; the distinction only fills in where there was n
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line69">line 69</a>
+        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line80">line 80</a>
     </li></ul></dd>
     
 
@@ -8123,13 +8190,13 @@ output never reaches a crawler) which is the point of the E-E-A-T byline in SDD-
 </div>
 
 <nav>
-    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
+    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#STATUS_ICONS">STATUS_ICONS</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Aug 03 2026 07:15:13 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Aug 10 2026 06:34:09 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>
