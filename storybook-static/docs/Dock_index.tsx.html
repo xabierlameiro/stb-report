@@ -29,6 +29,7 @@
             <pre class="prettyprint source linenums"><code>import React from 'react';
 import { menu } from '@/constants/navMenu';
 import Icon from '@/components/Dock/Icon';
+import Folder from '@/components/Dock/Folder';
 import { useRouter } from 'next/router';
 import { useDialog } from '@/context/dialog';
 import Link from 'next/link';
@@ -50,7 +51,7 @@ const Dock = () => {
         &lt;>
             &lt;nav className={styles.dock} data-testid="dock" aria-label={f({ id: 'nav.applications' })}>
                 &lt;ul>
-                    {menu.map(({ link, img, labelId, testId }, index) => {
+                    {menu.map(({ link, img, labelId, shortLabelId, testId, tools }, index) => {
                         const label = f({ id: labelId });
                         // `?? ''` for the root path: `'/'.split('/')[1]` is `''` but the compiler
                         // cannot know the string starts with a slash.
@@ -58,8 +59,15 @@ const Dock = () => {
                         const term =
                             typeof link === 'object'
                                 ? link[locale as keyof typeof link]?.split('/')[1]
-                                : link.split('/')[1];
+                                : link?.split('/')[1];
                         const check = term ? path.includes(term) : false;
+                        // `link` is optional since SDD-015 (a folder has none), so the per-locale
+                        // lookup that used to read straight off it needs the guard.
+                        const href = typeof link === 'object' ? (link[locale as keyof typeof link] ?? '/') : link;
+                        // A folder is marked as current when the open page is one of the tools it holds.
+                        const selected = tools
+                            ? tools.some((tool) => tool.link === pathname)
+                            : pathname === link || check;
                         return (
                             /**
                              * SDD-L05: `onClick` moved off the &lt;li> and onto the &lt;Link>. It was not a
@@ -68,26 +76,33 @@ const Dock = () => {
                              * clicks in the row's padding where no link exists, so the hit area did not
                              * match what the user could see.
                              */
-                            &lt;li
-                                key={index}
-                                className={clx(pathname === link || check ? styles.selected : '')}
-                                data-testid={testId}
-                            >
-                                &lt;Link
-                                    href={link?.[locale as keyof typeof link] ?? link}
-                                    title={label}
-                                    onClick={clickHandler}
-                                >
-                                    {/*
-                                     * SDD-L08: the icon's alt is empty and the label below carries
-                                     * the name instead. With both, a screen reader announced the
-                                     * destination twice per item; with only the alt, a touch user
-                                     * saw nothing at all, since the hover cue sits behind
-                                     * `@media (hover: hover)`.
-                                     */}
-                                    &lt;Icon src={img} alt="" />
-                                    &lt;span className={styles.label}>{label}&lt;/span>
-                                &lt;/Link>
+                            &lt;li key={index} className={clx(selected ? styles.selected : '')} data-testid={testId}>
+                                {tools ? (
+                                    &lt;Folder label={label} img={img} tools={tools} onNavigate={clickHandler} />
+                                ) : (
+                                    &lt;Link
+                                        href={href ?? '/'}
+                                        title={label}
+                                        aria-label={label}
+                                        onClick={clickHandler}
+                                        className={shortLabelId ? styles.hasShortLabel : undefined}
+                                    >
+                                        {/*
+                                         * SDD-L08: the icon's alt is empty and the label below carries
+                                         * the name instead. With both, a screen reader announced the
+                                         * destination twice per item; with only the alt, a touch user
+                                         * saw nothing at all, since the hover cue sits behind
+                                         * `@media (hover: hover)`.
+                                         */}
+                                        &lt;Icon src={img} alt="" />
+                                        &lt;span className={styles.label}>{label}&lt;/span>
+                                        {shortLabelId &amp;&amp; (
+                                            &lt;span className={clx(styles.label, styles.shortLabel)} aria-hidden="true">
+                                                {f({ id: shortLabelId })}
+                                            &lt;/span>
+                                        )}
+                                    &lt;/Link>
+                                )}
                             &lt;/li>
                         );
                     })}
@@ -108,13 +123,13 @@ export default Dock;
 </div>
 
 <nav>
-    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#STATUS_ICONS">STATUS_ICONS</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
+    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#CodeFirstPaint">CodeFirstPaint</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DWELL_MS">DWELL_MS</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#Folder">Folder</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GithubStars">GithubStars</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#MIN_SCROLLABLE_PX">MIN_SCROLLABLE_PX</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#READ_FRACTION">READ_FRACTION</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#STATUS_ICONS">STATUS_ICONS</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#StarPrompt">StarPrompt</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#VercelAnalytics">VercelAnalytics</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#panel">panel</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#sincePush">sincePush</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Fri Sep 18 2026 15:42:56 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Sep 21 2026 06:30:32 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -162,6 +162,131 @@ gtag.js ever runs — otherwise every visit would start denied.</p>
 
         
             
+<h4 class="name" id="DWELL_MS"><span class="type-signature">(constant) </span>DWELL_MS<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>And how long, so that a flick of the wheel to the bottom does not qualify.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="StarPrompt_index.tsx.html">StarPrompt/index.tsx</a>, <a href="StarPrompt_index.tsx.html#line13">line 13</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="MIN_SCROLLABLE_PX"><span class="type-signature">(constant) </span>MIN_SCROLLABLE_PX<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Below this, a scroller is a list or a sidebar rather than something that was read. Measured: the
+blog body is 2409px and the privacy policy 4692, against an 800px window.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="StarPrompt_index.tsx.html">StarPrompt/index.tsx</a>, <a href="StarPrompt_index.tsx.html#line15">line 15</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
 <h4 class="name" id="OG_IMAGE_WIDTH"><span class="type-signature">(constant) </span>OG_IMAGE_WIDTH<span class="type-signature"></span></h4>
 
 
@@ -295,6 +420,68 @@ documented as supported, so this split is safe where a <MetaTags /> would not be
 
         
             
+<h4 class="name" id="READ_FRACTION"><span class="type-signature">(constant) </span>READ_FRACTION<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>How far down the surface counts as having read it.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="StarPrompt_index.tsx.html">StarPrompt/index.tsx</a>, <a href="StarPrompt_index.tsx.html#line11">line 11</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
 <h4 class="name" id="STATUS_ICONS"><span class="type-signature">(constant) </span>STATUS_ICONS<span class="type-signature"></span></h4>
 
 
@@ -341,7 +528,7 @@ importing React components into it would make every consumer of the constants pu
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line92">line 92</a>
+        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line93">line 93</a>
     </li></ul></dd>
     
 
@@ -1481,6 +1668,167 @@ Open Graph consumers (LinkedIn, Facebook, Slack) do not read it.</p>
     
 
     
+    <h4 class="name" id="CodeFirstPaint"><span class="type-signature"></span>CodeFirstPaint<span class="signature">(props)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p><code>CH.Code</code> with the active file painted in the server HTML.</p>
+<p>Code Hike lays code out from measurements it can only take in the browser, so until the page
+hydrates it renders the lines at <code>opacity: 0</code> and the window is an empty dark box. On a cold load
+that is the whole JS download. This paints the same highlighted tokens, which the MDX compiler
+already passes in <code>files</code>, over that box until Code Hike has measured. Both happen in layout
+effects of the same commit, so the swap never reaches the screen as an empty frame.</p>
+<p><code>aria-hidden</code>: the text is also in Code Hike's own hidden layer, and a reader must not hear it twice.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>props</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Props</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The props <code>CH.Code</code> receives from the compiled MDX.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CodeFirstPaint_index.tsx.html">CodeFirstPaint/index.tsx</a>, <a href="CodeFirstPaint_index.tsx.html#line10">line 10</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">JSX.Element</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="ControlButtons"><span class="type-signature"></span>ControlButtons<span class="signature">(disabled, withPadding, onClickClose, onClickMinimise, onClickMaximise)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
     
 
@@ -2258,7 +2606,7 @@ nothing is written; this component only ever moves that state.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line31">line 31</a>
+        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line32">line 32</a>
     </li></ul></dd>
     
 
@@ -2431,7 +2779,7 @@ nothing is written; this component only ever moves that state.</p>
     
 
     
-    <h4 class="name" id="Dialog"><span class="type-signature"></span>Dialog<span class="signature">(dialogRef, open, withPadding, modalMode, header, body, footer, large, label, onClose)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
+    <h4 class="name" id="Dialog"><span class="type-signature"></span>Dialog<span class="signature">(dialogRef, open, withPadding, modalMode, header, body, footer, large, fitContent, label, onClose)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
     
 
     
@@ -2655,6 +3003,29 @@ nothing is written; this component only ever moves that state.</p>
 
         <tr>
             
+                <td class="name"><code>fitContent</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>If true, a small-screen modal sizes to its content</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>label</code></td>
             
 
@@ -2735,7 +3106,7 @@ nothing is written; this component only ever moves that state.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Dialog_index.tsx.html">Dialog/index.tsx</a>, <a href="Dialog_index.tsx.html#line21">line 21</a>
+        <a href="Dialog_index.tsx.html">Dialog/index.tsx</a>, <a href="Dialog_index.tsx.html#line23">line 23</a>
     </li></ul></dd>
     
 
@@ -2855,7 +3226,7 @@ nothing is written; this component only ever moves that state.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Dock_index.tsx.html">Dock/index.tsx</a>, <a href="Dock_index.tsx.html#line11">line 11</a>
+        <a href="Dock_index.tsx.html">Dock/index.tsx</a>, <a href="Dock_index.tsx.html#line12">line 12</a>
     </li></ul></dd>
     
 
@@ -2890,6 +3261,99 @@ nothing is written; this component only ever moves that state.</p>
 
 
     
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="Folder"><span class="type-signature"></span>Folder<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>A Dock folder: one slot that opens a small panel above the Dock listing the tools.</p>
+<p>It is not a route. <code>/next-leak</code> and <code>/next-coverage</code> stay the canonical entries, so the folder
+must not take a URL of its own or appear in the sitemap.</p>
+<p>The panel is always in the DOM and only <code>hidden</code> when closed, so both anchors are in the server
+HTML. That is how <code>/next-leak</code> is reachable from the home page today, and a panel that only
+existed after hydration would take that away from the new page.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Dock_Folder_index.tsx.html">Dock/Folder/index.tsx</a>, <a href="Dock_Folder_index.tsx.html#line20">line 20</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3048,6 +3512,99 @@ nothing is written; this component only ever moves that state.</p>
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>&lt;Date date="01-02-2023" /></code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="GithubStars"><span class="type-signature"></span>GithubStars<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>A menu bar extra for the repository, of the kind macOS puts to the left of the clock: the count
+is always on the bar, and clicking it opens a panel that reports the rest and offers the one
+action worth offering.</p>
+<p>It deliberately does not link anywhere on the bar itself. The count is a status, and a status
+that navigates away on a stray click is a trap — the <code>&lt;a&gt;</code> lives inside the panel, where the
+reader has already said they are interested.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="GithubStars_index.tsx.html">GithubStars/index.tsx</a>, <a href="GithubStars_index.tsx.html#line35">line 35</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3510,7 +4067,7 @@ nothing is written; this component only ever moves that state.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line148">line 148</a>
+        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line149">line 149</a>
     </li></ul></dd>
     
 
@@ -4490,7 +5047,7 @@ nothing is written; this component only ever moves that state.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Layout_index.tsx.html">Layout/index.tsx</a>, <a href="Layout_index.tsx.html#line13">line 13</a>
+        <a href="Layout_index.tsx.html">Layout/index.tsx</a>, <a href="Layout_index.tsx.html#line14">line 14</a>
     </li></ul></dd>
     
 
@@ -4606,7 +5163,7 @@ app identity — and that is also where they were before T8 moved them.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line108">line 108</a>
+        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line109">line 109</a>
     </li></ul></dd>
     
 
@@ -5642,7 +6199,7 @@ app identity — and that is also where they were before T8 moved them.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Blog_PostList_index.tsx.html">Blog/PostList/index.tsx</a>, <a href="Blog_PostList_index.tsx.html#line29">line 29</a>
+        <a href="Blog_PostList_index.tsx.html">Blog/PostList/index.tsx</a>, <a href="Blog_PostList_index.tsx.html#line34">line 34</a>
     </li></ul></dd>
     
 
@@ -6015,7 +6572,7 @@ unavailable&quot;) is unchanged; the distinction only fills in where there was n
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line80">line 80</a>
+        <a href="Layout_Header_index.tsx.html">Layout/Header/index.tsx</a>, <a href="Layout_Header_index.tsx.html#line81">line 81</a>
     </li></ul></dd>
     
 
@@ -6212,7 +6769,7 @@ unavailable&quot;) is unchanged; the distinction only fills in where there was n
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="SEO_index.tsx.html">SEO/index.tsx</a>, <a href="SEO_index.tsx.html#line23">line 23</a>
+        <a href="SEO_index.tsx.html">SEO/index.tsx</a>, <a href="SEO_index.tsx.html#line38">line 38</a>
     </li></ul></dd>
     
 
@@ -6820,7 +7377,7 @@ unavailable&quot;) is unchanged; the distinction only fills in where there was n
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Blog_StarCounter_index.tsx.html">Blog/StarCounter/index.tsx</a>, <a href="Blog_StarCounter_index.tsx.html#line9">line 9</a>
+        <a href="Blog_StarCounter_index.tsx.html">Blog/StarCounter/index.tsx</a>, <a href="Blog_StarCounter_index.tsx.html#line10">line 10</a>
     </li></ul></dd>
     
 
@@ -6867,6 +7424,106 @@ unavailable&quot;) is unchanged; the distinction only fills in where there was n
 </dl>
 
     
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="StarPrompt"><span class="type-signature"></span>StarPrompt<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>A macOS notification asking for a star, shown once per browser and never on arrival.</p>
+<p>The menu bar extra beside the clock is the permanent, passive half of this: it is there for
+anyone who looks. This is the other half — it asks, once, and only of someone who has actually
+read something. Both conditions have to hold: 60% of the surface AND 30 seconds on it, because
+either one alone is satisfied by a wheel flick or by an abandoned tab.</p>
+<p><strong>The window never scrolls here.</strong> This is a desktop simulation: <code>document.documentElement</code> is
+exactly the viewport on every route, and the reading happens inside a panel — the blog body and
+the legal article are the two that scroll, at 2409px and 4692px against an 800px window. A
+listener on <code>window</code> would therefore never have fired once, which is how this was written first
+and what measuring it caught. So the listener is on <code>document</code> in the CAPTURE phase, because a
+scroll event on an element does not bubble, and the fraction is read off whatever scrolled.</p>
+<p>The key is written the moment it appears, not when it is answered. Ignoring a request is an
+answer, and a prompt that returns until it gets a click is the pattern this is trying not to be.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="StarPrompt_index.tsx.html">StarPrompt/index.tsx</a>, <a href="StarPrompt_index.tsx.html#line21">line 21</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -7025,6 +7682,97 @@ unavailable&quot;) is unchanged; the distinction only fills in where there was n
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>&lt;TimeRead readTime="2" />;</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="VercelAnalytics"><span class="type-signature"></span>VercelAnalytics<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>measure-real-traffic: cookieless visit counting (Vercel Web Analytics). Visitors are told apart by
+a hash of the request discarded after 24 hours, not by a cookie, so it counts visitors who reject
+or ignore the consent banner, which GA4 under Consent Mode v2 cannot. Skipped for Lighthouse
+runs, like gtag, so audits measure the site and not the tracker.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="VercelAnalytics_index.tsx.html">VercelAnalytics/index.tsx</a>, <a href="VercelAnalytics_index.tsx.html#line11">line 11</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -7903,6 +8651,185 @@ a reader can act on the difference.</p>
     
 
     
+    <h4 class="name" id="panel"><span class="type-signature"></span>panel<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>The reading surface is a panel, not the window — see the component. jsdom reports 0 for every
+layout box, so the geometry has to be stated: these numbers stand in for the blog body, measured
+at 2409px of content in an 800px window.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="StarPrompt___test___starPrompt.test.tsx.html">StarPrompt/__test__/starPrompt.test.tsx</a>, <a href="StarPrompt___test___starPrompt.test.tsx.html#line4">line 4</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="sincePush"><span class="type-signature"></span>sincePush<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>How long ago the last push was, in the coarsest unit that is still true. <code>Intl.RelativeTimeFormat</code>
+does the wording per locale, so this never assembles a sentence by hand.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="GithubStars_index.tsx.html">GithubStars/index.tsx</a>, <a href="GithubStars_index.tsx.html#line14">line 14</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="useDeploymentStatus"><span class="type-signature"></span>useDeploymentStatus<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
@@ -8190,13 +9117,13 @@ output never reaches a crawler) which is the point of the E-E-A-T byline in SDD-
 </div>
 
 <nav>
-    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#STATUS_ICONS">STATUS_ICONS</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
+    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#CodeFirstPaint">CodeFirstPaint</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DWELL_MS">DWELL_MS</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#Folder">Folder</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GithubStars">GithubStars</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#MIN_SCROLLABLE_PX">MIN_SCROLLABLE_PX</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#READ_FRACTION">READ_FRACTION</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#STATUS_ICONS">STATUS_ICONS</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#StarPrompt">StarPrompt</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#VercelAnalytics">VercelAnalytics</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#panel">panel</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#sincePush">sincePush</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Fri Sep 18 2026 15:42:56 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Sep 21 2026 06:30:32 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

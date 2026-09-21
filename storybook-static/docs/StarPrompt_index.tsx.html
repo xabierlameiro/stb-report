@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Docs by Xabier Lameiro</title><link rel="icon" href="https://pre.xabierlameiro.com/favicon.png" title="The favicon"><meta name="robots" content="noindex">
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: StarPrompt/index.tsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import { AiFillStar } from 'react-icons/ai';
+import { SiGithub } from 'react-icons/si';
+import { useIntl } from 'react-intl';
+import { REPOSITORY_URL } from '@/constants/site';
+import { clx } from '@/helpers';
+import styles from './starPrompt.module.css';
+
+export const STAR_PROMPT_STORAGE_KEY = 'star-prompt';
+
+/** How far down the surface counts as having read it. */
+const READ_FRACTION = 0.6;
+/** And how long, so that a flick of the wheel to the bottom does not qualify. */
+const DWELL_MS = 30_000;
+/**
+ * Below this, a scroller is a list or a sidebar rather than something that was read. Measured: the
+ * blog body is 2409px and the privacy policy 4692, against an 800px window.
+ */
+const MIN_SCROLLABLE_PX = 400;
+
+/**
+ * A macOS notification asking for a star, shown once per browser and never on arrival.
+ *
+ * The menu bar extra beside the clock is the permanent, passive half of this: it is there for
+ * anyone who looks. This is the other half — it asks, once, and only of someone who has actually
+ * read something. Both conditions have to hold: 60% of the surface AND 30 seconds on it, because
+ * either one alone is satisfied by a wheel flick or by an abandoned tab.
+ *
+ * **The window never scrolls here.** This is a desktop simulation: `document.documentElement` is
+ * exactly the viewport on every route, and the reading happens inside a panel — the blog body and
+ * the legal article are the two that scroll, at 2409px and 4692px against an 800px window. A
+ * listener on `window` would therefore never have fired once, which is how this was written first
+ * and what measuring it caught. So the listener is on `document` in the CAPTURE phase, because a
+ * scroll event on an element does not bubble, and the fraction is read off whatever scrolled.
+ *
+ * The key is written the moment it appears, not when it is answered. Ignoring a request is an
+ * answer, and a prompt that returns until it gets a click is the pattern this is trying not to be.
+ */
+const StarPrompt = () => {
+    const { formatMessage: f } = useIntl();
+    const [visible, setVisible] = React.useState(false);
+
+    React.useEffect(() => {
+        let alreadyAsked = true;
+        try {
+            alreadyAsked = window.localStorage.getItem(STAR_PROMPT_STORAGE_KEY) !== null;
+        } catch {
+            /* Private mode, or storage denied. Saying nothing is the safe direction. */
+        }
+        if (alreadyAsked) return undefined;
+
+        const openedAt = Date.now();
+        const onScroll = (event: Event) => {
+            const target = event.target;
+            const scroller = target instanceof Element ? target : document.documentElement;
+            const scrollable = scroller.scrollHeight - scroller.clientHeight;
+            if (scrollable &lt; MIN_SCROLLABLE_PX) return;
+
+            const read = (scroller.scrollTop + scroller.clientHeight) / scroller.scrollHeight;
+            if (read &lt; READ_FRACTION || Date.now() - openedAt &lt; DWELL_MS) return;
+
+            document.removeEventListener('scroll', onScroll, true);
+            try {
+                window.localStorage.setItem(STAR_PROMPT_STORAGE_KEY, 'seen');
+            } catch {
+                /* See above: if it cannot be recorded it will simply be asked again. */
+            }
+            setVisible(true);
+        };
+
+        document.addEventListener('scroll', onScroll, { capture: true, passive: true });
+        return () => document.removeEventListener('scroll', onScroll, true);
+    }, []);
+
+    const answer = React.useCallback((choice: 'starred' | 'dismissed') => {
+        try {
+            window.localStorage.setItem(STAR_PROMPT_STORAGE_KEY, choice);
+        } catch {
+            /* The prompt is closing either way. */
+        }
+        setVisible(false);
+    }, []);
+
+    React.useEffect(() => {
+        if (!visible) return undefined;
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') answer('dismissed');
+        };
+        document.addEventListener('keydown', onKeyDown);
+        return () => document.removeEventListener('keydown', onKeyDown);
+    }, [visible, answer]);
+
+    if (!visible) return null;
+
+    return (
+        &lt;div data-testid="star-prompt" role="status" className={clx(styles.banner, styles.enter)}>
+            &lt;span className={styles.icon} aria-hidden="true">
+                &lt;SiGithub />
+            &lt;/span>
+            &lt;div className={styles.body}>
+                &lt;p className={styles.title}>{f({ id: 'starPrompt.title' })}&lt;/p>
+                &lt;p className={styles.message}>{f({ id: 'starPrompt.message' })}&lt;/p>
+                &lt;div className={styles.actions}>
+                    &lt;a
+                        className={styles.accept}
+                        href={REPOSITORY_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => answer('starred')}
+                    >
+                        &lt;AiFillStar aria-hidden="true" />
+                        {f({ id: 'starPrompt.accept' })}
+                    &lt;/a>
+                    &lt;button type="button" className={styles.dismiss} onClick={() => answer('dismissed')}>
+                        {f({ id: 'starPrompt.dismiss' })}
+                    &lt;/button>
+                &lt;/div>
+            &lt;/div>
+        &lt;/div>
+    );
+};
+
+export default StarPrompt;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#CodeFirstPaint">CodeFirstPaint</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DWELL_MS">DWELL_MS</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#Folder">Folder</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GithubStars">GithubStars</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#MIN_SCROLLABLE_PX">MIN_SCROLLABLE_PX</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#READ_FRACTION">READ_FRACTION</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#STATUS_ICONS">STATUS_ICONS</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#StarPrompt">StarPrompt</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#VercelAnalytics">VercelAnalytics</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#panel">panel</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#sincePush">sincePush</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Sep 21 2026 06:30:32 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Docs by Xabier Lameiro</title><link rel="icon" href="https://pre.xabierlameiro.com/favicon.png" title="The favicon"><meta name="robots" content="noindex">
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: StarPrompt/__test__/starPrompt.test.tsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { render, screen, fireEvent, act } from '@/test';
+import StarPrompt, { STAR_PROMPT_STORAGE_KEY } from '..';
+
+/**
+ * The reading surface is a panel, not the window — see the component. jsdom reports 0 for every
+ * layout box, so the geometry has to be stated: these numbers stand in for the blog body, measured
+ * at 2409px of content in an 800px window.
+ */
+const panel = (scrollHeight = 2409, clientHeight = 800) => {
+    const element = document.createElement('div');
+    Object.defineProperty(element, 'scrollHeight', { value: scrollHeight, configurable: true });
+    Object.defineProperty(element, 'clientHeight', { value: clientHeight, configurable: true });
+    document.body.appendChild(element);
+    return element;
+};
+
+const scrollTo = (element: HTMLElement, top: number) => {
+    Object.defineProperty(element, 'scrollTop', { value: top, configurable: true });
+    act(() => {
+        element.dispatchEvent(new Event('scroll', { bubbles: false }));
+    });
+};
+
+describe('StarPrompt', () => {
+    beforeEach(() => {
+        jest.useFakeTimers();
+        window.localStorage.clear();
+        document.body.innerHTML = '';
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
+    it('appears once the visitor has read most of a panel', () => {
+        const body = panel();
+        render(&lt;StarPrompt />);
+        jest.setSystemTime(Date.now() + 60_000);
+
+        scrollTo(body, 200);
+        expect(screen.queryByTestId('star-prompt')).not.toBeInTheDocument();
+
+        scrollTo(body, 1400);
+        expect(screen.getByTestId('star-prompt')).toBeInTheDocument();
+    });
+
+    /** A flick of the wheel to the bottom is not reading, so the dwell has to hold too. */
+    it('stays away when the panel was scrolled through immediately', () => {
+        const body = panel();
+        render(&lt;StarPrompt />);
+
+        scrollTo(body, 1600);
+
+        expect(screen.queryByTestId('star-prompt')).not.toBeInTheDocument();
+    });
+
+    /** A short scroller is a list or a sidebar, not something that was read. */
+    it('ignores scrollers too short to have been read', () => {
+        const sidebar = panel(950, 800);
+        render(&lt;StarPrompt />);
+        jest.setSystemTime(Date.now() + 60_000);
+
+        scrollTo(sidebar, 150);
+
+        expect(screen.queryByTestId('star-prompt')).not.toBeInTheDocument();
+    });
+
+    it('never asks twice, even if the visitor answers nothing', () => {
+        const body = panel();
+        const { unmount } = render(&lt;StarPrompt />);
+        jest.setSystemTime(Date.now() + 60_000);
+        scrollTo(body, 1400);
+        expect(screen.getByTestId('star-prompt')).toBeInTheDocument();
+        expect(window.localStorage.getItem(STAR_PROMPT_STORAGE_KEY)).toBe('seen');
+        unmount();
+
+        render(&lt;StarPrompt />);
+        jest.setSystemTime(Date.now() + 60_000);
+        scrollTo(body, 1400);
+
+        expect(screen.queryByTestId('star-prompt')).not.toBeInTheDocument();
+    });
+
+    it('records the answer and closes', () => {
+        const body = panel();
+        render(&lt;StarPrompt />);
+        jest.setSystemTime(Date.now() + 60_000);
+        scrollTo(body, 1400);
+
+        fireEvent.click(screen.getByRole('button'));
+
+        expect(screen.queryByTestId('star-prompt')).not.toBeInTheDocument();
+        expect(window.localStorage.getItem(STAR_PROMPT_STORAGE_KEY)).toBe('dismissed');
+    });
+
+    it('closes on Escape', () => {
+        const body = panel();
+        render(&lt;StarPrompt />);
+        jest.setSystemTime(Date.now() + 60_000);
+        scrollTo(body, 1400);
+
+        fireEvent.keyDown(document, { key: 'Escape' });
+
+        expect(screen.queryByTestId('star-prompt')).not.toBeInTheDocument();
+    });
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#CodeFirstPaint">CodeFirstPaint</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DWELL_MS">DWELL_MS</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#Folder">Folder</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GithubStars">GithubStars</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#MIN_SCROLLABLE_PX">MIN_SCROLLABLE_PX</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#READ_FRACTION">READ_FRACTION</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#STATUS_ICONS">STATUS_ICONS</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#StarPrompt">StarPrompt</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#VercelAnalytics">VercelAnalytics</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#panel">panel</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#sincePush">sincePush</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Sep 21 2026 06:30:32 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

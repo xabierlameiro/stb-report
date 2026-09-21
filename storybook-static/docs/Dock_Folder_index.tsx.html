@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Docs by Xabier Lameiro</title><link rel="icon" href="https://pre.xabierlameiro.com/favicon.png" title="The favicon"><meta name="robots" content="noindex">
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Dock/Folder/index.tsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useIntl } from 'react-intl';
+import Icon from '@/components/Dock/Icon';
+import type { Tool } from '@/constants/navMenu';
+import { clx } from '@/helpers';
+import styles from './folder.module.css';
+
+type Props = {
+    label: string;
+    img: string;
+    tools: Array&lt;Tool>;
+    /** The Dock closes its dialog when a link is followed; the folder does the same. */
+    onNavigate: () => void;
+};
+
+const PANEL_ID = 'dock-tools-panel';
+
+/**
+ * A Dock folder: one slot that opens a small panel above the Dock listing the tools.
+ *
+ * It is not a route. `/next-leak` and `/next-coverage` stay the canonical entries, so the folder
+ * must not take a URL of its own or appear in the sitemap.
+ *
+ * The panel is always in the DOM and only `hidden` when closed, so both anchors are in the server
+ * HTML. That is how `/next-leak` is reachable from the home page today, and a panel that only
+ * existed after hydration would take that away from the new page.
+ */
+const Folder = ({ label, img, tools, onNavigate }: Props) => {
+    const { formatMessage: f } = useIntl();
+    const { asPath } = useRouter();
+    const [open, setOpen] = React.useState(false);
+    const trigger = React.useRef&lt;HTMLButtonElement>(null);
+    const wrapper = React.useRef&lt;HTMLDivElement>(null);
+
+    // A route change means the panel did its job, or the user left by other means.
+    React.useEffect(() => {
+        setOpen(false);
+    }, [asPath]);
+
+    React.useEffect(() => {
+        if (!open) return undefined;
+        const onPointerDown = (event: MouseEvent) => {
+            if (!wrapper.current?.contains(event.target as Node)) setOpen(false);
+        };
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key !== 'Escape') return;
+            setOpen(false);
+            // Escape returns focus to the trigger; otherwise it lands on &lt;body>.
+            trigger.current?.focus();
+        };
+        document.addEventListener('mousedown', onPointerDown);
+        document.addEventListener('keydown', onKeyDown);
+        return () => {
+            document.removeEventListener('mousedown', onPointerDown);
+            document.removeEventListener('keydown', onKeyDown);
+        };
+    }, [open]);
+
+    return (
+        &lt;div className={styles.folder} ref={wrapper}>
+            &lt;button
+                ref={trigger}
+                type="button"
+                className={styles.trigger}
+                aria-expanded={open}
+                aria-controls={PANEL_ID}
+                title={label}
+                onClick={() => setOpen((was) => !was)}
+            >
+                &lt;Icon src={img} alt="" />
+                &lt;span className={styles.label}>{label}&lt;/span>
+            &lt;/button>
+            &lt;ul id={PANEL_ID} hidden={!open} className={clx(styles.panel, open ? styles.opened : '')}>
+                {tools.map(({ labelId, link, testId }) => (
+                    &lt;li key={link} data-testid={`tools-${testId}`}>
+                        &lt;Link
+                            href={link}
+                            className={clx(styles.entry, asPath === link ? styles.current : '')}
+                            aria-current={asPath === link ? 'page' : undefined}
+                            onClick={() => {
+                                setOpen(false);
+                                onNavigate();
+                            }}
+                        >
+                            {f({ id: labelId })}
+                        &lt;/Link>
+                    &lt;/li>
+                ))}
+            &lt;/ul>
+        &lt;/div>
+    );
+};
+
+export default Folder;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#CodeFirstPaint">CodeFirstPaint</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DWELL_MS">DWELL_MS</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#Folder">Folder</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GithubStars">GithubStars</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#MIN_SCROLLABLE_PX">MIN_SCROLLABLE_PX</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#READ_FRACTION">READ_FRACTION</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#STATUS_ICONS">STATUS_ICONS</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#StarPrompt">StarPrompt</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#VercelAnalytics">VercelAnalytics</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#panel">panel</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#sincePush">sincePush</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Sep 21 2026 06:30:32 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

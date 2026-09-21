@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Docs by Xabier Lameiro</title><link rel="icon" href="https://pre.xabierlameiro.com/favicon.png" title="The favicon"><meta name="robots" content="noindex">
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: CodeFirstPaint/index.tsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import { Code } from '@code-hike/mdx/dist/components.cjs.js';
+import styles from './codeFirstPaint.module.css';
+
+type Props = React.ComponentProps&lt;typeof Code>;
+
+// Code Hike always pads the line-number column to at least two digits.
+const MIN_LINE_NUMBER = 10;
+
+/**
+ * @description `CH.Code` with the active file painted in the server HTML.
+ *
+ * Code Hike lays code out from measurements it can only take in the browser, so until the page
+ * hydrates it renders the lines at `opacity: 0` and the window is an empty dark box. On a cold load
+ * that is the whole JS download. This paints the same highlighted tokens, which the MDX compiler
+ * already passes in `files`, over that box until Code Hike has measured. Both happen in layout
+ * effects of the same commit, so the swap never reaches the screen as an empty frame.
+ *
+ * `aria-hidden`: the text is also in Code Hike's own hidden layer, and a reader must not hear it twice.
+ * @param {Props} props - The props `CH.Code` receives from the compiled MDX.
+ * @returns {JSX.Element}
+ */
+const CodeFirstPaint = (props: Props) => {
+    const [measured, setMeasured] = React.useState(false);
+    React.useLayoutEffect(() => setMeasured(true), []);
+
+    const { files, northPanel, lineNumbers, codeConfig, style } = props;
+    const file = files.find(({ name }) => name === northPanel.active) ?? files[0];
+    // `IRawTheme` leaves `colors` untyped; the MDX pipeline passes a VS Code theme (mdx.plugins.ts).
+    const colors = (codeConfig.theme as { colors?: Record&lt;string, string> }).colors ?? {};
+    const lines = file?.code.lines ?? [];
+    const numberWidth = `${String(Math.max(lines.length, MIN_LINE_NUMBER)).length + 2.5}ch`;
+
+    return (
+        &lt;div className={styles.root} style={{ height: style?.height }}>
+            &lt;Code {...props} />
+            {!measured &amp;&amp; file &amp;&amp; (
+                &lt;div
+                    className={styles.firstPaint}
+                    aria-hidden="true"
+                    data-testid="code-first-paint"
+                    style={{ background: colors['editor.background'], color: colors['editor.foreground'] }}
+                >
+                    &lt;code className="ch-code-scroll-parent">
+                        {lines.map(({ tokens }, index) => (
+                            // Lines have no identity beyond their position, and the list never reorders.
+                            &lt;div key={index}>
+                                {lineNumbers &amp;&amp; (
+                                    &lt;span className="ch-code-line-number" style={{ width: numberWidth }}>
+                                        {index + 1}
+                                    &lt;/span>
+                                )}
+                                &lt;span>
+                                    {tokens.map(({ content, props: tokenProps }, tokenIndex) => (
+                                        &lt;span key={tokenIndex} style={tokenProps?.style}>
+                                            {content}
+                                        &lt;/span>
+                                    ))}
+                                &lt;/span>
+                            &lt;/div>
+                        ))}
+                    &lt;/code>
+                &lt;/div>
+            )}
+        &lt;/div>
+    );
+};
+
+export default CodeFirstPaint;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#CodeFirstPaint">CodeFirstPaint</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DWELL_MS">DWELL_MS</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#Folder">Folder</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GithubStars">GithubStars</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#MIN_SCROLLABLE_PX">MIN_SCROLLABLE_PX</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#READ_FRACTION">READ_FRACTION</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#STATUS_ICONS">STATUS_ICONS</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#StarPrompt">StarPrompt</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#VercelAnalytics">VercelAnalytics</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#panel">panel</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#sincePush">sincePush</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Sep 21 2026 06:30:32 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
