@@ -29,17 +29,9 @@
             <pre class="prettyprint source linenums"><code>import React, { ReactNode } from 'react';
 import styles from './header.module.css';
 import type { IconType } from 'react-icons';
-import {
-    SiBitcoincash,
-    SiCodecov,
-    SiGithub,
-    SiLighthouse,
-    SiLinkedin,
-    SiPlaywright,
-    SiReadthedocs,
-    SiReddit,
-    SiStorybook,
-} from 'react-icons/si';
+import { SiBitcoincash, SiGithub, SiLinkedin, SiReadthedocs, SiReddit, SiStorybook } from 'react-icons/si';
+import { FaChartPie, FaCheckDouble } from 'react-icons/fa';
+import { FaGaugeHigh } from 'react-icons/fa6';
 import { useRouter } from 'next/router';
 import { useIntl } from 'react-intl';
 import { socialLinks, translateRoute } from '@/constants/site';
@@ -64,20 +56,39 @@ const Weather = dynamic(() => import('@/components/Weather'), {
  * @returns {JSX.Element}
  */
 const DateAndHour = ({ children, minutes = 1 }: { children?: ReactNode; minutes?: number }) => {
-    const { locale } = useRouter();
-    const { formatMessage: f } = useIntl();
-    const [date, setDate] = React.useState(new Date());
+    const { formatMessage: f, formatDate, formatTime } = useIntl();
+    /**
+     * `null` until the component mounts, so the server and the first client render agree and no
+     * field needs `suppressHydrationWarning`.
+     *
+     * This used to be `useState(new Date())` with all four spans marked `suppressHydrationWarning`,
+     * and it showed the wrong date on the live site. That attribute tells React to keep the
+     * server's text and skip the DOM patch; afterwards React only rewrites a node whose value
+     * differs from the previous CLIENT render. The weekday, day and month are the same from one
+     * render to the next, so the DOM kept the text from **the moment the page was built** — and
+     * these pages are statically generated, so that could be weeks old. Only the time recovered,
+     * because the interval below changes it every minute.
+     *
+     * Measured on a production build with the clock pinned to 2026-01-15: `new Date()` in the page
+     * returned that instant while the header read `Sat 26 Sep 10:41 PM`, the build's own timestamp.
+     */
+    const [date, setDate] = React.useState&lt;Date | null>(null);
     const [openWeatherWidget, setOpenWeatherWidget] = React.useState&lt;boolean>(false);
-    const day = date.toLocaleDateString(locale, { weekday: 'short' });
-    const dayNumber = date.toLocaleDateString(locale, { day: 'numeric' });
-    const month = date.toLocaleDateString(locale, { month: 'short' });
-    const hour = date.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric' });
+    // Through react-intl rather than `toLocaleDateString(locale)`: Chromium has no Galician data, so
+    // on /gl the native call wrote the clock in the browser's language (`src/intl/galician.ts`).
+    const day = date ? formatDate(date, { weekday: 'short' }) : '';
+    const dayNumber = date ? formatDate(date, { day: 'numeric' }) : '';
+    const month = date ? formatDate(date, { month: 'short' }) : '';
+    const hour = date ? formatTime(date, { hour: 'numeric', minute: 'numeric' }) : '';
 
     const handleWeatherClick = React.useCallback(() => {
         setOpenWeatherWidget(true);
     }, []);
 
     React.useEffect(() => {
+        // The first call is what puts a date on screen at all; the interval only keeps it current.
+        setDate(new Date());
+
         const interval = setInterval(() => {
             setDate(new Date());
         }, 60000 * minutes);
@@ -88,11 +99,23 @@ const DateAndHour = ({ children, minutes = 1 }: { children?: ReactNode; minutes?
         &lt;div className={styles.clock}>
             &lt;Tooltip>
                 &lt;Tooltip.Trigger>
-                    &lt;button type="button" className={styles.dateAndHour} onClick={handleWeatherClick}>
-                        &lt;span suppressHydrationWarning>{day}&lt;/span>
-                        &lt;span suppressHydrationWarning>{dayNumber}&lt;/span>
-                        &lt;span suppressHydrationWarning>{month}&lt;/span>
-                        &lt;span suppressHydrationWarning>{hour}&lt;/span>
+                    &lt;button
+                        type="button"
+                        className={styles.dateAndHour}
+                        onClick={handleWeatherClick}
+                        // Marks the pre-mount state so the stylesheet can hold the slot open. The
+                        // clock is `width: max-content` at the right end of a row that is anchored
+                        // right, so an empty one drags every status item 118px across (measured on
+                        // a production build at 1280px: `en` 130.2px filled against 12.0px empty).
+                        // The browser scores that at 0.00038 CLS because the bar is 24px tall, but
+                        // it is plainly visible, and it is new — the old markup always rendered
+                        // text, wrong text.
+                        data-pending={date === null ? '' : undefined}
+                    >
+                        &lt;span>{day}&lt;/span>
+                        &lt;span>{dayNumber}&lt;/span>
+                        &lt;span>{month}&lt;/span>
+                        &lt;span>{hour}&lt;/span>
                     &lt;/button>
                 &lt;/Tooltip.Trigger>
                 &lt;Tooltip.Content>{f({ id: 'weather.tooltip' })}&lt;/Tooltip.Content>
@@ -129,9 +152,25 @@ const STATUS_ICONS: Record&lt;string, IconType> = {
     'reddit-link': SiReddit,
     'storybook-link': SiStorybook,
     'docs-link': SiReadthedocs,
-    'coverage-link': SiCodecov,
-    'e2e-link': SiPlaywright,
-    'lighthouse-link': SiLighthouse,
+    /**
+     * The last three are generic glyphs rather than the brands they link to, for the same reason in
+     * each case: all three point at a report this repository generates about itself, so there is no
+     * brand to honour, and all three brand marks fail the bar's sizing rule.
+     *
+     * A pie chart, not Codecov's umbrella: the umbrella inks 28% of its box against the bar's 56%
+     * median, which no size inside a 24px bar could correct.
+     *
+     * A double check and a gauge, not Playwright's masks and Lighthouse's tower. The bar sizes every
+     * glyph so its largest side is exactly 16px (`header.module.css`), which leaves the shorter side
+     * to the glyph's own proportions — and those two were the extremes of the set, the masks at
+     * 1.37:1 and the tower at 0.67:1 against 0.77-1.06 for everything else. Measured on the
+     * candidates, both replacements are 1.000:1 and ink their box on both axes, so a ruler laid
+     * across the row reads the same on either one. A double check is what a green e2e run reports,
+     * and a gauge is the dial Lighthouse draws its score on.
+     */
+    'coverage-link': FaChartPie,
+    'e2e-link': FaCheckDouble,
+    'lighthouse-link': FaGaugeHigh,
 };
 
 /**
@@ -164,6 +203,9 @@ const NavLinks = () => {
                         // to come from here. Without it these read as "link, link, link" — the
                         // exact defect L05/L06 spent two phases removing from the rest of the page.
                         aria-label={item.title}
+                        // Carries the optical size and box width the icon is drawn at — one rule per
+                        // icon in the stylesheet rather than nine classes threaded through here.
+                        data-icon={item.testId}
                         className={styles[`shed${item.shed}`]}
                     >
                         {Icon ? &lt;Icon aria-hidden="true" /> : item.name}
@@ -225,15 +267,15 @@ const Header = ({ children }: { children?: ReactNode }) => {
                     &lt;IndexedCounter />
                 &lt;/span>
                 {/**
-                 * SDD-L12-T10. These two carry a wider slot because they render TWO values each:
-                 * `ViewCounter all` is page views AND new users, with an icon on each, and `Heating`
-                 * is the outside and measured temperatures. Sized on the default 96px slot, the view
-                 * counter lost 69px off its left edge in production — the defect the owner reported.
+                 * These two render TWO values each — `ViewCounter all` is page views AND new users,
+                 * `Heating` is the outside and measured temperatures — so they are the widest items
+                 * in the row and the first to shed. They used to carry a per-widget slot width;
+                 * every item is now `max-content` and the ladder is derived from their worst case.
                  */}
-                &lt;span className={`${styles.statusItem} ${styles.slotViews} ${styles.shed1}`}>
+                &lt;span className={`${styles.statusItem} ${styles.shed1}`}>
                     &lt;ViewCounter all />
                 &lt;/span>
-                &lt;span className={`${styles.statusItem} ${styles.slotHeating} ${styles.shed2}`}>
+                &lt;span className={`${styles.statusItem} ${styles.shed2}`}>
                     &lt;Heating />
                 &lt;/span>
                 {/**
@@ -263,13 +305,13 @@ export default Header;
 </div>
 
 <nav>
-    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#CodeFirstPaint">CodeFirstPaint</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DWELL_MS">DWELL_MS</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#Folder">Folder</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GithubStars">GithubStars</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#MIN_SCROLLABLE_PX">MIN_SCROLLABLE_PX</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#READ_FRACTION">READ_FRACTION</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#STATUS_ICONS">STATUS_ICONS</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#StarPrompt">StarPrompt</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#VercelAnalytics">VercelAnalytics</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#panel">panel</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#sincePush">sincePush</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
+    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BUILD_TIME">BUILD_TIME</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#CodeFirstPaint">CodeFirstPaint</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DWELL_MS">DWELL_MS</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#Folder">Folder</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GithubStars">GithubStars</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#MIN_SCROLLABLE_PX">MIN_SCROLLABLE_PX</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#READ_FRACTION">READ_FRACTION</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#STATUS_ICONS">STATUS_ICONS</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#StarPrompt">StarPrompt</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#VercelAnalytics">VercelAnalytics</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#clockFields">clockFields</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#hydrated">hydrated</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#panel">panel</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#sincePush">sincePush</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Sep 21 2026 06:30:32 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Sep 28 2026 06:33:03 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

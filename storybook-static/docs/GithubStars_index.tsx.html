@@ -29,8 +29,7 @@
             <pre class="prettyprint source linenums"><code>import React from 'react';
 import { AiFillStar } from 'react-icons/ai';
 import { GoRepoForked, GoEye, GoIssueOpened } from 'react-icons/go';
-import { useIntl } from 'react-intl';
-import { useRouter } from 'next/router';
+import { useIntl, type IntlShape } from 'react-intl';
 import useGithubStars from '@/hooks/useGithubStars';
 import RenderManager from '@/components/RenderManager';
 import { REPOSITORY_URL } from '@/constants/site';
@@ -40,10 +39,11 @@ import styles from './githubStars.module.css';
 const PANEL_ID = 'github-stars-panel';
 
 /**
- * How long ago the last push was, in the coarsest unit that is still true. `Intl.RelativeTimeFormat`
- * does the wording per locale, so this never assembles a sentence by hand.
+ * How long ago the last push was, in the coarsest unit that is still true. react-intl does the
+ * wording per locale, so this never assembles a sentence by hand. Its formatter rather than a bare
+ * `Intl.RelativeTimeFormat`, which has no Galician data in Chromium (`src/intl/galician.ts`).
  */
-const sincePush = (pushedAt: string, locale: string): string | null => {
+const sincePush = (pushedAt: string, format: IntlShape['formatRelativeTime']): string | null => {
     const at = Date.parse(pushedAt);
     if (Number.isNaN(at)) return null;
 
@@ -53,11 +53,10 @@ const sincePush = (pushedAt: string, locale: string): string | null => {
         ['hour', 3600],
         ['minute', 60],
     ];
-    const format = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
     for (const [unit, size] of units) {
-        if (Math.abs(seconds) >= size) return format.format(Math.round(seconds / size), unit);
+        if (Math.abs(seconds) >= size) return format(Math.round(seconds / size), unit, { numeric: 'auto' });
     }
-    return format.format(0, 'minute');
+    return format(0, 'minute', { numeric: 'auto' });
 };
 
 /**
@@ -71,8 +70,7 @@ const sincePush = (pushedAt: string, locale: string): string | null => {
  */
 const GithubStars = () => {
     const { data, error, loading } = useGithubStars();
-    const { formatMessage: f, formatNumber } = useIntl();
-    const { locale = 'en' } = useRouter();
+    const { formatMessage: f, formatNumber, formatRelativeTime } = useIntl();
     const [open, setOpen] = React.useState(false);
     const triggerRef = React.useRef&lt;HTMLButtonElement>(null);
     const panelRef = React.useRef&lt;HTMLDivElement>(null);
@@ -106,7 +104,7 @@ const GithubStars = () => {
         };
     }, [open, close]);
 
-    const updated = data?.pushedAt ? sincePush(data.pushedAt, locale) : null;
+    const updated = data?.pushedAt ? sincePush(data.pushedAt, formatRelativeTime) : null;
 
     return (
         &lt;div className={styles.extra}>
@@ -196,13 +194,13 @@ export default GithubStars;
 </div>
 
 <nav>
-    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#CodeFirstPaint">CodeFirstPaint</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DWELL_MS">DWELL_MS</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#Folder">Folder</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GithubStars">GithubStars</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#MIN_SCROLLABLE_PX">MIN_SCROLLABLE_PX</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#READ_FRACTION">READ_FRACTION</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#STATUS_ICONS">STATUS_ICONS</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#StarPrompt">StarPrompt</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#VercelAnalytics">VercelAnalytics</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#panel">panel</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#sincePush">sincePush</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
+    <h2><a href="/">Home</a></h2><h3>Components</h3><ul><li><a href="global.html#ArticlePanel">ArticlePanel</a></li><li><a href="global.html#AsidePanel">AsidePanel</a></li><li><a href="global.html#Avatar">Avatar</a></li><li><a href="global.html#BUILD_TIME">BUILD_TIME</a></li><li><a href="global.html#BackgroundImage">BackgroundImage</a></li><li><a href="global.html#CONSENT_STORAGE_KEY">CONSENT_STORAGE_KEY</a></li><li><a href="global.html#CodeFirstPaint">CodeFirstPaint</a></li><li><a href="global.html#ControlButtons">ControlButtons</a></li><li><a href="global.html#CookieConsent">CookieConsent</a></li><li><a href="global.html#CountDown">CountDown</a></li><li><a href="global.html#CryptoPrice">CryptoPrice</a></li><li><a href="global.html#DWELL_MS">DWELL_MS</a></li><li><a href="global.html#DateAndHour">DateAndHour</a></li><li><a href="global.html#DeploymentStatus">DeploymentStatus</a></li><li><a href="global.html#Dialog">Dialog</a></li><li><a href="global.html#Dock">Dock</a></li><li><a href="global.html#Folder">Folder</a></li><li><a href="global.html#FormattedDate">FormattedDate</a></li><li><a href="global.html#GithubStars">GithubStars</a></li><li><a href="global.html#GoogleAdsense">GoogleAdsense</a></li><li><a href="global.html#GridLayoutControl">GridLayoutControl</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Heating">Heating</a></li><li><a href="global.html#Icon">Icon</a></li><li><a href="global.html#IconWithName">IconWithName</a></li><li><a href="global.html#IndexedCounter">IndexedCounter</a></li><li><a href="global.html#LangSelect">LangSelect</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#MIN_SCROLLABLE_PX">MIN_SCROLLABLE_PX</a></li><li><a href="global.html#NavLinks">NavLinks</a></li><li><a href="global.html#NavList">NavList</a></li><li><a href="global.html#NavigationArrows">NavigationArrows</a></li><li><a href="global.html#News">News</a></li><li><a href="global.html#Notification">Notification</a></li><li><a href="global.html#OG_IMAGE_WIDTH">OG_IMAGE_WIDTH</a></li><li><a href="global.html#OG_LOCALES">OG_LOCALES</a></li><li><a href="global.html#PostList">PostList</a></li><li><a href="global.html#READ_FRACTION">READ_FRACTION</a></li><li><a href="global.html#RenderManager">RenderManager</a></li><li><a href="global.html#Route">Route</a></li><li><a href="global.html#SEO">SEO</a></li><li><a href="global.html#STATUS_ICONS">STATUS_ICONS</a></li><li><a href="global.html#SearchInput">SearchInput</a></li><li><a href="global.html#SidesShift">SidesShift</a></li><li><a href="global.html#StarCounter">StarCounter</a></li><li><a href="global.html#StarPrompt">StarPrompt</a></li><li><a href="global.html#TimeRead">TimeRead</a></li><li><a href="global.html#UNTRANSLATED_PATH_PREFIXES">UNTRANSLATED_PATH_PREFIXES</a></li><li><a href="global.html#VercelAnalytics">VercelAnalytics</a></li><li><a href="global.html#ViewCounter">ViewCounter</a></li><li><a href="global.html#VisibilityManager">VisibilityManager</a></li><li><a href="global.html#Weather">Weather</a></li><li><a href="global.html#alternateLinks">alternateLinks</a></li><li><a href="global.html#articleTags">articleTags</a></li><li><a href="global.html#blogTags">blogTags</a></li><li><a href="global.html#calculateTimeLeft">calculateTimeLeft</a></li><li><a href="global.html#clockFields">clockFields</a></li><li><a href="global.html#consentSignals">consentSignals</a></li><li><a href="global.html#errorMessageId">errorMessageId</a></li><li><a href="global.html#hydrated">hydrated</a></li><li><a href="global.html#ogLocaleTags">ogLocaleTags</a></li><li><a href="global.html#panel">panel</a></li><li><a href="global.html#resolveSeoUrls">resolveSeoUrls</a></li><li><a href="global.html#sincePush">sincePush</a></li><li><a href="global.html#staticHreflangTags">staticHreflangTags</a></li><li><a href="global.html#useDeploymentStatus">useDeploymentStatus</a></li><li><a href="global.html#usePostComponents">usePostComponents</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Sep 21 2026 06:30:32 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://xabierlameiro.com">Xabier Lameiro</a> on Mon Sep 28 2026 06:33:03 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>
